@@ -218,3 +218,32 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Firmware (Keil / STM32CubeMX)
+
+# Build output — regenerated every time you build, huge and useless in git
+firmware/MDK-ARM/Objects/
+firmware/MDK-ARM/Listings/
+*.o
+*.d
+*.axf
+*.hex
+*.elf
+*.bin
+*.map
+*.htm
+*.lnp
+*.dep
+
+# Keil local/user-specific files — these store per-machine settings
+# (window layout, breakpoints, last debug session) that shouldn't be shared
+*.uvguix.*
+*.uvoptx
+JLinkLog.txt
+
+# Keil backup files
+*.bak
+*.~*
+
+# STM32CubeMX backup/log
+firmware/*.ioc.bak
