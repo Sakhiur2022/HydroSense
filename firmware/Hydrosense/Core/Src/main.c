@@ -90,7 +90,7 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-
+		HAL_ADC_Start(&hadc1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -100,6 +100,33 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+		HAL_ADC_PollForConversion(&hadc1, 100);
+		uint32_t raw_value = HAL_ADC_GetValue(&hadc1);
+		  if (raw_value > 2300) {
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 0);
+	  }
+	  else if (raw_value > 1800 ) {
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 0);
+	  }
+	  else if (raw_value > 1500) {
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 1);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 0);
+	  }
+	  else {
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
+		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 1);
+	  }
+		HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }

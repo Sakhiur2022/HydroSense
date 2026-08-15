@@ -1,0 +1,23 @@
+--cpu Cortex-M3
+"hydrosense\startup_stm32f103xb.o"
+"hydrosense\main.o"
+"hydrosense\stm32f1xx_it.o"
+"hydrosense\stm32f1xx_hal_msp.o"
+"hydrosense\stm32f1xx_hal_gpio_ex.o"
+"hydrosense\stm32f1xx_hal_adc.o"
+"hydrosense\stm32f1xx_hal_adc_ex.o"
+"hydrosense\stm32f1xx_hal.o"
+"hydrosense\stm32f1xx_hal_rcc.o"
+"hydrosense\stm32f1xx_hal_rcc_ex.o"
+"hydrosense\stm32f1xx_hal_gpio.o"
+"hydrosense\stm32f1xx_hal_dma.o"
+"hydrosense\stm32f1xx_hal_cortex.o"
+"hydrosense\stm32f1xx_hal_pwr.o"
+"hydrosense\stm32f1xx_hal_flash.o"
+"hydrosense\stm32f1xx_hal_flash_ex.o"
+"hydrosense\stm32f1xx_hal_exti.o"
+"hydrosense\system_stm32f1xx.o"
+--strict --scatter "Hydrosense\Hydrosense.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "Hydrosense.map" -o Hydrosense\Hydrosense.axf
