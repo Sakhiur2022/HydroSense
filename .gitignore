@@ -247,3 +247,5 @@ JLinkLog.txt
 
 # STM32CubeMX backup/log
 firmware/*.ioc.bak
+
+.vscode/
