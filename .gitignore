@@ -1,0 +1,38 @@
+# Keil/ARM build artifacts
+*.o
+*.d
+*.lst
+*.crf
+*.dep
+*.axf
+*.elf
+*.map
+*.htm
+*.sct
+*.scr
+*.lnp
+*.iex
+*.bak
+*.tmp
+*.exe
+*.dll
+
+# Keil project folders
+MDK-ARM/*/Listings/
+MDK-ARM/*/Objects/
+MDK-ARM/*/DebugConfig/
+MDK-ARM/*/*.o
+MDK-ARM/*/*.d
+MDK-ARM/*/*.lst
+MDK-ARM/*/*.crf
+MDK-ARM/*/*.dep
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,0 +1,20 @@
+timestamp,temperature_C,humidity_pct,soil_moisture_pct,light_lux,condition,cycle_id
+2026-07-03 21:00:00,28.72,67.72,86.92,8019.3,outdoor,outdoor_cycle01
+2026-07-03 22:00:00,28.57,66.7,83.46,7780.9,outdoor,outdoor_cycle01
+2026-07-03 23:00:00,29.03,63.37,79.87,8643.2,outdoor,outdoor_cycle01
+2026-07-04 00:00:00,27.78,65.47,76.21,7801.5,outdoor,outdoor_cycle01
+2026-07-04 01:00:00,28.52,64.71,72.55,8151.5,outdoor,outdoor_cycle01
+2026-07-04 02:00:00,28.28,64.16,69.35,7857.5,outdoor,outdoor_cycle01
+2026-07-04 03:00:00,30.06,66.01,65.67,7621.7,outdoor,outdoor_cycle01
+2026-07-04 04:00:00,30.27,67.58,62.42,7544.2,outdoor,outdoor_cycle01
+2026-07-04 05:00:00,29.76,63.23,58.79,8133.1,outdoor,outdoor_cycle01
+2026-07-04 06:00:00,28.44,64.85,55.69,7027.6,outdoor,outdoor_cycle01
+2026-07-04 07:00:00,30.14,59.94,52.59,10301.5,outdoor,outdoor_cycle01
+2026-07-04 08:00:00,31.24,61.58,49.37,11932.4,outdoor,outdoor_cycle01
+2026-07-04 09:00:00,33.23,59.72,45.47,12655.3,outdoor,outdoor_cycle01
+2026-07-04 10:00:00,33.45,57.0,41.74,14083.1,outdoor,outdoor_cycle01
+2026-07-04 11:00:00,33.9,59.41,38.22,15237.3,outdoor,outdoor_cycle01
+2026-07-04 12:00:00,35.28,52.62,34.13,14954.5,outdoor,outdoor_cycle01
+2026-07-04 13:00:00,34.0,56.2,30.39,14699.0,outdoor,outdoor_cycle01
+2026-07-04 14:00:00,32.98,60.63,26.75,14169.3,outdoor,outdoor_cycle01
+2026-07-04 15:00:00,33.08,60.46,22.81,13193.6,outdoor,outdoor_cycle01

@@ -1,0 +1,5 @@
+cycle_id,condition,team_member,start_time,end_time,duration_hours,excluded,exclusion_reason,notes
+indoor_cycle01,indoor,DUMMY_GENERATOR,2026-07-01 09:00:00,2026-07-02 12:00:00,28,False,,Synthetic placeholder data for pipeline testing only.
+indoor_cycle02,indoor,DUMMY_GENERATOR,2026-07-02 15:00:00,2026-07-03 18:00:00,28,False,,Synthetic placeholder data for pipeline testing only.
+outdoor_cycle01,outdoor,DUMMY_GENERATOR,2026-07-03 21:00:00,2026-07-04 15:00:00,19,False,,Synthetic placeholder data for pipeline testing only.
+outdoor_cycle02,outdoor,DUMMY_GENERATOR,2026-07-04 18:00:00,2026-07-05 12:00:00,19,False,,Synthetic placeholder data for pipeline testing only.
