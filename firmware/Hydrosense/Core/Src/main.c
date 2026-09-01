@@ -21,6 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "sensors.h"
+#include "stm32f1xx_hal_uart.h"
+#include "flash_logger.h"
 
 /* USER CODE END Includes */
 
@@ -31,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define LOG_INTERVAL_MS  120000  // 2min
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -42,14 +45,18 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
-/* USER CODE BEGIN PV */
+I2C_HandleTypeDef hi2c1;
 
+/* USER CODE BEGIN PV */
+static SensorData_t sensor_data;
+static uint32_t last_log_time = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -89,44 +96,78 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-		HAL_ADC_Start(&hadc1);
+
+// Initialize modules
+  Sensors_Init();
+  Logger_Init();
+	Logger_Clear();
+
+  // Blink LED to show startup (3 blinks = code is running)
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED ON
+  HAL_Delay(200);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);    // LED OFF
+  HAL_Delay(200);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED ON
+  HAL_Delay(200);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);    // LED OFF
+  HAL_Delay(200);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);  // LED ON
+  HAL_Delay(200);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);    // LED OFF
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+ // --- Check if 5 minutes have passed ---
+    uint32_t current_time = HAL_GetTick(); // <-- THIS DECLARES current_time
+
+    if ((current_time - last_log_time) >= LOG_INTERVAL_MS) {
+        last_log_time = current_time;
+
+        // Read all sensors
+        if (Sensors_ReadAll(&sensor_data)) {
+            LogEntry_t entry;
+            entry.timestamp_seconds = current_time / 1000;
+            entry.temperature_x10 = (uint16_t)(sensor_data.temperature * 10);
+            entry.humidity_x10 = (uint16_t)(sensor_data.humidity * 10);
+            entry.soil_moisture_x10 = (uint16_t)(sensor_data.soil_moisture * 10);
+            entry.light_lux = (uint16_t)sensor_data.light_intensity;
+
+            if (Logger_AddEntry(&entry)) {
+                // --- SUCCESS: Blink LED 3 times fast ---
+                for (int i = 0; i < 3; i++) {
+                    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET); // ON
+                    HAL_Delay(100);
+                    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);   // OFF
+                    HAL_Delay(100);
+                }
+            } else {
+                // --- FLASH FULL: Blink 5 times fast ---
+                for (int i = 0; i < 5; i++) {
+                    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+                    HAL_Delay(50);
+                    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+                    HAL_Delay(50);
+                }
+            }
+        } else {
+            // --- SENSOR ERROR: Blink 1 long blink ---
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+            HAL_Delay(500);
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+            HAL_Delay(500);
+        }
+    }
+
+    HAL_Delay(100);  // Small delay to keep CPU responsive
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_ADC_PollForConversion(&hadc1, 100);
-		uint32_t raw_value = HAL_ADC_GetValue(&hadc1);
-		  if (raw_value > 2300) {
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 0);
-	  }
-	  else if (raw_value > 1800 ) {
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 0);
-	  }
-	  else if (raw_value > 1500) {
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 1);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 0);
-	  }
-	  else {
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, 0);
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 1);
-	  }
-		HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
@@ -144,10 +185,13 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -157,17 +201,17 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV2;
+  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV8;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -196,7 +240,7 @@ static void MX_ADC1_Init(void)
   */
   hadc1.Instance = ADC1;
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
@@ -208,9 +252,9 @@ static void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_9;
+  sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -222,30 +266,54 @@ static void MX_ADC1_Init(void)
 }
 
 /**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
   */
 static void MX_GPIO_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
 
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_5|GPIO_PIN_7, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : PA1 PA3 PA5 PA7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_5|GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
