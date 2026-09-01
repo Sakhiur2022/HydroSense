@@ -1,0 +1,26 @@
+--cpu Cortex-M3
+"go2\startup_stm32f103xb.o"
+"go2\main.o"
+"go2\stm32f1xx_it.o"
+"go2\stm32f1xx_hal_msp.o"
+"go2\flash_logger.o"
+"go2\sensors.o"
+"go2\stm32f1xx_hal_gpio_ex.o"
+"go2\stm32f1xx_hal_adc.o"
+"go2\stm32f1xx_hal_adc_ex.o"
+"go2\stm32f1xx_hal.o"
+"go2\stm32f1xx_hal_rcc.o"
+"go2\stm32f1xx_hal_rcc_ex.o"
+"go2\stm32f1xx_hal_gpio.o"
+"go2\stm32f1xx_hal_dma.o"
+"go2\stm32f1xx_hal_cortex.o"
+"go2\stm32f1xx_hal_pwr.o"
+"go2\stm32f1xx_hal_flash.o"
+"go2\stm32f1xx_hal_flash_ex.o"
+"go2\stm32f1xx_hal_exti.o"
+"go2\stm32f1xx_hal_i2c.o"
+"go2\system_stm32f1xx.o"
+--library_type=microlib --strict --scatter "go2\go2.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "go2.map" -o go2\go2.axf
