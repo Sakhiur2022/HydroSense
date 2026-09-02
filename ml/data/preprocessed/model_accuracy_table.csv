@@ -1,0 +1,7 @@
+condition,model,accuracy,n_predictions
+indoor,random_forest,0.9739884393063584,346
+indoor,decision_tree,0.9710982658959537,346
+indoor,logistic_regression,0.9595375722543352,346
+outdoor,random_forest,0.9808917197452229,314
+outdoor,decision_tree,0.9777070063694268,314
+outdoor,logistic_regression,0.9299363057324841,314

@@ -1,0 +1,96 @@
+{
+  "indoor": [
+    {
+      "test_cycle": "indoor_cycle01",
+      "train_cycles": [
+        "indoor_cycle02",
+        "indoor_cycle03",
+        "indoor_cycle04",
+        "indoor_cycle05"
+      ]
+    },
+    {
+      "test_cycle": "indoor_cycle02",
+      "train_cycles": [
+        "indoor_cycle01",
+        "indoor_cycle03",
+        "indoor_cycle04",
+        "indoor_cycle05"
+      ]
+    },
+    {
+      "test_cycle": "indoor_cycle03",
+      "train_cycles": [
+        "indoor_cycle01",
+        "indoor_cycle02",
+        "indoor_cycle04",
+        "indoor_cycle05"
+      ]
+    },
+    {
+      "test_cycle": "indoor_cycle04",
+      "train_cycles": [
+        "indoor_cycle01",
+        "indoor_cycle02",
+        "indoor_cycle03",
+        "indoor_cycle05"
+      ]
+    },
+    {
+      "test_cycle": "indoor_cycle05",
+      "train_cycles": [
+        "indoor_cycle01",
+        "indoor_cycle02",
+        "indoor_cycle03",
+        "indoor_cycle04"
+      ]
+    }
+  ],
+  "outdoor": [
+    {
+      "test_cycle": "outdoor_cycle01",
+      "train_cycles": [
+        "outdoor_cycle02",
+        "outdoor_cycle03",
+        "outdoor_cycle04",
+        "outdoor_cycle05"
+      ]
+    },
+    {
+      "test_cycle": "outdoor_cycle02",
+      "train_cycles": [
+        "outdoor_cycle01",
+        "outdoor_cycle03",
+        "outdoor_cycle04",
+        "outdoor_cycle05"
+      ]
+    },
+    {
+      "test_cycle": "outdoor_cycle03",
+      "train_cycles": [
+        "outdoor_cycle01",
+        "outdoor_cycle02",
+        "outdoor_cycle04",
+        "outdoor_cycle05"
+      ]
+    },
+    {
+      "test_cycle": "outdoor_cycle04",
+      "train_cycles": [
+        "outdoor_cycle01",
+        "outdoor_cycle02",
+        "outdoor_cycle03",
+        "outdoor_cycle05"
+      ]
+    },
+    {
+      "test_cycle": "outdoor_cycle05",
+      "train_cycles": [
+        "outdoor_cycle01",
+        "outdoor_cycle02",
+        "outdoor_cycle03",
+        "outdoor_cycle04"
+      ]
+    }
+  ]
+}
